@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ticket {
+  id            Int      @id @default(autoincrement())
+  created_at    DateTime @default(now())
+  caller_name   String?
+  call_duration String?  // Tiempo de atención
+  subject       String?
+  ticket_type   String?   // Tipo de atención
+  solution      String?
+  site          String?   // Sede
+  agent_name    String?   // Agente asignado
+  raw_text      String?
+  status        String?   @default("pendiente") // pendiente | cerrado
+
+  @@map("tickets")
+}
+
+model UserProfile {
+  id          Int      @id @default(autoincrement())
+  user_id     String   @unique // UUID de Supabase Auth
+  email       String
+  role        String   @default("soporte") // super_admin | admin | soporte | invitado
+  permissions String[] @default(["tickets"]) // ["tickets", "usuarios", "reportes"] - qué secciones puede ver
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("user_profiles")
+}
